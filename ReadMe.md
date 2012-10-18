@@ -1,0 +1,1 @@
+The purpose of this project to understand how to build a DDD project using LoKAD.CQRS principals.  
