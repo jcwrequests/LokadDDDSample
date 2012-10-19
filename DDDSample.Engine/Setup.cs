@@ -62,20 +62,25 @@ public sealed class Setup
 
         var quarantine = new EnvelopeQuarantine(Streamer, sender, Streaming.GetContainer(ErrorsContainer));
 
-        var builder = new CqrsEngineBuilder(Streamer, quarantine);
+        var builder = new FluentCqrsEngineBuilder(Streamer, quarantine);
 
         var events = new RedirectToDynamicEvent();
         var commands = new RedirectToCommand();
         var funcs = new RedirectToCommand();
-            
 
-        builder.Handle(CreateInbox(EventProcessingQueue), aem => CallHandlers(events, aem), "watch");
-        builder.Handle(CreateInbox(AggregateHandlerQueue), aem => CallHandlers(commands, aem));
-        builder.Handle(CreateInbox(RouterQueue), MakeRouter(messageStore), "watch");
+
+        builder.
+            Handle(CreateInbox, aem => CallHandlers(events, aem), "watch", EventProcessingQueue).
+            Handle(CreateInbox(AggregateHandlerQueue), aem => CallHandlers(commands, aem)).
+            Handle(CreateInbox(RouterQueue), MakeRouter(messageStore), "watch").
+            Handle(CreateInbox(FunctionalRecorderQueue), aem => RecordFunctionalEvent(aem, messageStore)).
+            Handle(_serviceQueues, CreateInbox, aem => CallHandlers(funcs, aem));
+
+
         // multiple service queues
-        _serviceQueues.ForEach(s => builder.Handle(CreateInbox(s), aem => CallHandlers(funcs, aem)));
 
-        builder.Handle(CreateInbox(FunctionalRecorderQueue), aem => RecordFunctionalEvent(aem, messageStore));
+
+    
         var viewDocs = CreateDocs(ViewStrategy);
         var stateDocs = new NuclearStorage(CreateDocs(DocStrategy));
 
@@ -103,7 +108,7 @@ public sealed class Setup
 
         return new Container
         {
-            Builder = builder,
+            Builder = builder.Instance,
             Setup = this,
             SendToCommandRouter = toCommandRouter,
             MessageStore = messageStore,
