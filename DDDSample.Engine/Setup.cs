@@ -96,7 +96,8 @@ public sealed class Setup
 
 
         // wire all projections
-        projections.BuildFor(viewDocs).ForEach(events.WireToWhen);
+        //projections.BuildFor(viewDocs).ForEach(events.WireToWhen);
+        projections.BuildFor().ForEach(events.WireToWhen);
 
         // wire in event store publisher
         var publisher = new MessageStorePublisher(messageStore, toEventHandlers, stateDocs, DoWePublishThisRecord);
@@ -180,9 +181,13 @@ public sealed class Setup
             _factories.Add(factory);
         }
 
-        public IEnumerable<object> BuildFor(IDocumentStore store)
+        //public IEnumerable<object> BuildFor(IDocumentStore store)
+        //{
+        //    return _factories.SelectMany(factory => factory(store));
+        //}
+        public IEnumerable<object> BuildFor()
         {
-            return _factories.SelectMany(factory => factory(store));
+            return _factories.SelectMany(factory => factory());
         }
     }
 
@@ -233,11 +238,16 @@ public sealed class Container : IDisposable
         Publisher.VerifyEventStreamSanity();
 
         // we run S2 projections from 3 different BCs against one domain log
+        //StartupProjectionRebuilder.Rebuild(
+        //    token,
+        //    ViewDocs,
+        //    MessageStore,
+        //    store => ProjectionFactories.BuildFor(store));
         StartupProjectionRebuilder.Rebuild(
             token,
             ViewDocs,
             MessageStore,
-            store => ProjectionFactories.BuildFor(store));
+            store => ProjectionFactories.BuildFor());
     }
 
     public void Dispose()

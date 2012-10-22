@@ -48,7 +48,7 @@ public sealed class EventStore : IEventStore
         foreach (var record in _store.EnumerateMessages(key, 0, int.MaxValue))
         {
             stream.Events.AddRange(record.Items.Cast<IEvent>());
-            stream.Version = record.StreamVersion;
+            stream.StreamVersion = record.StreamVersion;
         }
         return stream;
     }
