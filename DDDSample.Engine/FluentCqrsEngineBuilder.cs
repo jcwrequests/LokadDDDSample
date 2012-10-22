@@ -41,9 +41,24 @@ namespace DDDSample.Engine
             _builder.Handle(inbox, lambda,name);
             return this;
         }
-        public FluentCqrsEngineBuilder Handle(string[] queues, Func<string, IPartitionInbox> inbox, Action<ImmutableEnvelope> lambda, string name = null)
+        //public FluentCqrsEngineBuilder Handle(string[] queues, Func<string, IPartitionInbox> inbox, Action<ImmutableEnvelope> lambda, string name = null)
+        //{
+        //    queues.ForEach(queue => _builder.Handle(inbox(queue), lambda,name));
+        //    return this;
+        //}
+        public FluentCqrsEngineBuilder Handle( Func<string, IPartitionInbox> inbox, Action<ImmutableEnvelope> lambda, string name = null,params string[] queues)
         {
-            queues.ForEach(queue => _builder.Handle(inbox(queue), lambda,name));
+            queues.ForEach(queue => _builder.Handle(inbox(queue), lambda, name));
+            return this;
+        }
+        public FluentCqrsEngineBuilder AddTask(IEngineProcess process)
+        {
+            _builder.AddTask(process);
+            return this;
+        }
+        public FluentCqrsEngineBuilder AddTask(Func<System.Threading.CancellationToken,System.Threading.Tasks.Task> factoryToStartTask)
+        {
+            _builder.AddTask(factoryToStartTask);
             return this;
         }
         public CqrsEngineBuilder Instance {get{return _builder;}}

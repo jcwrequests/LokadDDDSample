@@ -70,11 +70,11 @@ public sealed class Setup
 
 
         builder.
-            Handle(CreateInbox, aem => CallHandlers(events, aem), "watch", EventProcessingQueue).
-            Handle(CreateInbox(AggregateHandlerQueue), aem => CallHandlers(commands, aem)).
-            Handle(CreateInbox(RouterQueue), MakeRouter(messageStore), "watch").
-            Handle(CreateInbox(FunctionalRecorderQueue), aem => RecordFunctionalEvent(aem, messageStore)).
-            Handle(_serviceQueues, CreateInbox, aem => CallHandlers(funcs, aem));
+            Handle(inbox: CreateInbox, lambda: aem => CallHandlers(events, aem), name: "watch",queues: EventProcessingQueue).
+            Handle(inbox: CreateInbox, lambda: aem => CallHandlers(commands, aem), queues: AggregateHandlerQueue).
+            Handle(inbox: CreateInbox, lambda: MakeRouter(messageStore), name: "watch",queues: RouterQueue).
+            Handle(inbox: CreateInbox, lambda: aem => RecordFunctionalEvent(aem, messageStore), queues: FunctionalRecorderQueue).
+            Handle(inbox: CreateInbox, lambda: aem => CallHandlers(funcs, aem), queues: _serviceQueues);
 
 
         // multiple service queues
@@ -86,15 +86,22 @@ public sealed class Setup
 
 
 
-        var vector = new DomainIdentityGenerator(stateDocs);
+        //var vector = new DomainIdentityGenerator(stateDocs);
+
         //var ops = new StreamOps(Streaming);
         var projections = new ProjectionsConsumingOneBoundedContext();
         // Domain Bounded Context
-        DomainBoundedContext.EntityApplicationServices(viewDocs, store,vector).ForEach(commands.WireToWhen);
+        //DomainBoundedContext.EntityApplicationServices(viewDocs, store,vector).ForEach(commands.WireToWhen);
+        IBoundedContext context = new BoundedContext(sender: sender, 
+                                                     documentStore: viewDocs, 
+                                                     command: commands, 
+                                                     eventStore: store);
+        context.Build();
+
         DomainBoundedContext.FuncApplicationServices().ForEach(funcs.WireToWhen);
         DomainBoundedContext.Ports(sender).ForEach(events.WireToWhen);
         DomainBoundedContext.Tasks(sender, viewDocs, true).ForEach(builder.AddTask);
-        projections.RegisterFactory(DomainBoundedContext.Projections);
+        projections.RegisterFactory(context.Projections);
 
         // Client Bounded Context
         projections.RegisterFactory(ClientBoundedContext.Projections);

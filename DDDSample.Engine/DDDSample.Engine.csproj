@@ -63,9 +63,17 @@
     <Compile Include="StartupProjectionRebuilder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ClassLibrary1\DDDSample.Core.csproj">
+      <Project>{90e46785-9be3-47de-bffd-d83d74ebb0b2}</Project>
+      <Name>DDDSample.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DDDSample.Contracts\DDDSample.Contracts.csproj">
       <Project>{05F71D09-DF1C-4480-9FEC-E29B542BBBDE}</Project>
       <Name>DDDSample.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDDSample.Domain\DDDSample.Domain.csproj">
+      <Project>{af2e64da-7dac-4a7f-b660-928a29162c13}</Project>
+      <Name>DDDSample.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\DDDSample.Wires\DDDSample.Wires.csproj">
       <Project>{CB05E65D-4657-470D-BC0F-888425D88785}</Project>

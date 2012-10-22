@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lokad.Cqrs;
 using Lokad.Cqrs.TapeStorage;
-using DDDSample.Contracts;
+using DDDSample;
 
 
 public sealed class EventStore : IEventStore
@@ -30,7 +30,7 @@ public sealed class EventStore : IEventStore
             // load server events
             var server = LoadEventStream(id);
             // throw a real problem
-            throw OptimisticConcurrencyException.Create(server.Version, e.ExpectedStreamVersion, id, server.Events);
+            throw OptimisticConcurrencyException.Create(server.StreamVersion, e.ExpectedStreamVersion, id, server.Events);
         }
     }
 
