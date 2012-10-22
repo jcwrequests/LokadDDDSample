@@ -30,33 +30,18 @@ namespace DDDSample
         }
         public void Build()
         {
-            this.ApplicationServices();
-
-        }
-
-        private  IEnumerable<object> Ports()
-        {
-            throw new NotImplementedException();
-        }
-
-        private IEnumerable<Func<System.Threading.CancellationToken, System.Threading.Tasks.Task>> Tasks()
-        {
-            throw new NotImplementedException();
+            new CustomerApplicationService(eventStore);
+            //DomainBoundedContext.Ports(sender).ForEach(events.WireToWhen);
+            //DomainBoundedContext.Tasks(sender, viewDocs, true).ForEach(builder.AddTask);
+            //DomainBoundedContext.FuncApplicationServices().ForEach(funcs.WireToWhen);
+            //DomainBoundedContext.EntityApplicationServices(viewDocs, store,vector).ForEach(commands.WireToWhen);
         }
 
         public IEnumerable<object> Projections()
         {
-            throw new NotImplementedException();
-        }
-
-        private IEnumerable<IApplicationService> ApplicationServices()
-        {
-            yield return new CustomerApplicationService(eventStore);
-        }
-
-        private IEnumerable<object> FuncApplicationServices()
-        {
             yield break;
         }
+
+       
     }
 }

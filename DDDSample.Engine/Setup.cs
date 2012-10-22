@@ -76,35 +76,24 @@ public sealed class Setup
             Handle(inbox: CreateInbox, lambda: aem => RecordFunctionalEvent(aem, messageStore), queues: FunctionalRecorderQueue).
             Handle(inbox: CreateInbox, lambda: aem => CallHandlers(funcs, aem), queues: _serviceQueues);
 
-
         // multiple service queues
 
-
-    
         var viewDocs = CreateDocs(ViewStrategy);
         var stateDocs = new NuclearStorage(CreateDocs(DocStrategy));
-
-
 
         //var vector = new DomainIdentityGenerator(stateDocs);
 
         //var ops = new StreamOps(Streaming);
         var projections = new ProjectionsConsumingOneBoundedContext();
         // Domain Bounded Context
-        //DomainBoundedContext.EntityApplicationServices(viewDocs, store,vector).ForEach(commands.WireToWhen);
         IBoundedContext context = new BoundedContext(sender: sender, 
                                                      documentStore: viewDocs, 
                                                      command: commands, 
                                                      eventStore: store);
         context.Build();
 
-        DomainBoundedContext.FuncApplicationServices().ForEach(funcs.WireToWhen);
-        DomainBoundedContext.Ports(sender).ForEach(events.WireToWhen);
-        DomainBoundedContext.Tasks(sender, viewDocs, true).ForEach(builder.AddTask);
         projections.RegisterFactory(context.Projections);
 
-        // Client Bounded Context
-        projections.RegisterFactory(ClientBoundedContext.Projections);
 
         // wire all projections
         projections.BuildFor(viewDocs).ForEach(events.WireToWhen);
@@ -181,7 +170,8 @@ public sealed class Setup
     /// </summary>
     public sealed class ProjectionsConsumingOneBoundedContext
     {
-        public delegate IEnumerable<object> FactoryForWhenProjections(IDocumentStore store);
+        //public delegate IEnumerable<object> FactoryForWhenProjections(IDocumentStore store);
+        public delegate IEnumerable<object> FactoryForWhenProjections();
 
         readonly IList<FactoryForWhenProjections> _factories = new List<FactoryForWhenProjections>();
 

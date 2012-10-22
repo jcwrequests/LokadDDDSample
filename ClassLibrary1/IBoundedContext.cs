@@ -11,11 +11,7 @@ namespace DDDSample
 {
     public interface IBoundedContext
     {
-        IEnumerable<object> Ports();
-        IEnumerable<Func<CancellationToken, Task>> Tasks();
         IEnumerable<object> Projections();
-        IEnumerable<IApplicationService> ApplicationServices();
-        IEnumerable<object> FuncApplicationServices();
         void Build();
     }
 }
