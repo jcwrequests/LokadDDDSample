@@ -21,11 +21,6 @@ namespace DDDSample.Engine
         {
             _builder = new CqrsEngineBuilder(streamer, quarantine, duplication);
         }
-        public FluentCqrsEngineBuilder AddTask(IEngineProcess process)
-        {
-            _builder.AddTask(process);
-            return this;
-        }
         public FluentCqrsEngineBuilder Build(System.Threading.CancellationToken token)
         {
             _builder.Build(token);

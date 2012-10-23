@@ -7,7 +7,7 @@ using Lokad.Cqrs;
 using Lokad.Cqrs.AtomicStorage;
 using ProtoBuf;
 using ServiceStack.Text;
-using DDDSample.Contracts;
+using DDDSample;
 
 
     static class NameCache<T>

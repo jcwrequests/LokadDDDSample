@@ -15,7 +15,7 @@ using Lokad.Cqrs.Evil;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using ServiceStack.Text;
-using DDDSample.Contracts;
+using DDDSample;
 
 
     public static class Contracts

@@ -30,16 +30,18 @@ namespace DDDSample
         }
         public void Build()
         {
-            new CustomerApplicationService(eventStore);
+            command.WireToWhen(new CustomerApplicationService(eventStore));
             //DomainBoundedContext.Ports(sender).ForEach(events.WireToWhen);
             //DomainBoundedContext.Tasks(sender, viewDocs, true).ForEach(builder.AddTask);
             //DomainBoundedContext.FuncApplicationServices().ForEach(funcs.WireToWhen);
             //DomainBoundedContext.EntityApplicationServices(viewDocs, store,vector).ForEach(commands.WireToWhen);
+            command.WireToWhen( new CustomerIndexService(documentStore.GetReader<unit, CustomerIndexLookUp>()));
+            
         }
 
-        public IEnumerable<object> Projections()
+        public IEnumerable<object> Projections(IDocumentStore docs)
         {
-            yield break;
+            yield return new CustomerIndexProjection(docs.GetWriter<unit, CustomerIndexLookUp>());
         }
 
        

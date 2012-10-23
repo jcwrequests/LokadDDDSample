@@ -35,6 +35,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,6 +48,9 @@
     <Compile Include="Aggregates\Customer\CustomerState.cs" />
     <Compile Include="BoundedContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Customer\CustomerIndexLookUp.cs" />
+    <Compile Include="Services\Customer\CustomerIndexProjection.cs" />
+    <Compile Include="Services\Customer\CustomerIndexService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClassLibrary1\DDDSample.Core.csproj">

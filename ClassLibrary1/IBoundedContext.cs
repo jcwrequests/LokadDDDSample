@@ -11,7 +11,7 @@ namespace DDDSample
 {
     public interface IBoundedContext
     {
-        IEnumerable<object> Projections();
+        IEnumerable<object> Projections(IDocumentStore docs);
         void Build();
     }
 }

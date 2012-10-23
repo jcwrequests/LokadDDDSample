@@ -97,7 +97,7 @@ public sealed class Setup
 
         // wire all projections
         //projections.BuildFor(viewDocs).ForEach(events.WireToWhen);
-        projections.BuildFor().ForEach(events.WireToWhen);
+        projections.BuildFor(viewDocs).ForEach(events.WireToWhen);
 
         // wire in event store publisher
         var publisher = new MessageStorePublisher(messageStore, toEventHandlers, stateDocs, DoWePublishThisRecord);
@@ -171,8 +171,8 @@ public sealed class Setup
     /// </summary>
     public sealed class ProjectionsConsumingOneBoundedContext
     {
-        //public delegate IEnumerable<object> FactoryForWhenProjections(IDocumentStore store);
-        public delegate IEnumerable<object> FactoryForWhenProjections();
+        public delegate IEnumerable<object> FactoryForWhenProjections(IDocumentStore store);
+        //public delegate IEnumerable<object> FactoryForWhenProjections();
 
         readonly IList<FactoryForWhenProjections> _factories = new List<FactoryForWhenProjections>();
 
@@ -185,9 +185,9 @@ public sealed class Setup
         //{
         //    return _factories.SelectMany(factory => factory(store));
         //}
-        public IEnumerable<object> BuildFor()
+        public IEnumerable<object> BuildFor(IDocumentStore store)
         {
-            return _factories.SelectMany(factory => factory());
+            return _factories.SelectMany(factory => factory(store));
         }
     }
 
@@ -247,7 +247,7 @@ public sealed class Container : IDisposable
             token,
             ViewDocs,
             MessageStore,
-            store => ProjectionFactories.BuildFor());
+            store => ProjectionFactories.BuildFor(store));
     }
 
     public void Dispose()
