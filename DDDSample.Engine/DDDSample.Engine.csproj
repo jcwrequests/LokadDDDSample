@@ -64,6 +64,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Queues.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="StartupProjectionRebuilder.cs" />
   </ItemGroup>

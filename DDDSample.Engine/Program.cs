@@ -73,15 +73,17 @@ namespace DDDSample.Engine
                 SystemObserver.Notify("Using store : {0}", path);
 
                 var config = FileStorage.CreateConfig(path);
-                setup.Streaming = config.CreateStreaming();
-                setup.CreateDocs = config.CreateDocumentStore;
-                setup.CreateInbox = s => config.CreateInbox(s, DecayEvil.BuildExponentialDecay(500));
-                setup.CreateQueueWriter = config.CreateQueueWriter;
-                setup.CreateTapes = config.CreateAppendOnlyStore;
 
-                setup.ConfigureQueues(1, 1);
+                return setup.
+                    ConfigStreaming(config.CreateStreaming()).
+                    ConfigCreateDoc(config.CreateDocumentStore).
+                    ConfigCreateInbox(s => config.CreateInbox(s, DecayEvil.BuildExponentialDecay(500))).
+                    ConfigCreateTapes(config.CreateAppendOnlyStore).
+                    ConfigCreateQueueWriter(config.CreateQueueWriter).
+                    ConfigureQueues(1,1).
+                    Build();
 
-                return setup.Build();
+                
             }
             //if (integrationPath.StartsWith("Default") || integrationPath.Equals("UseDevelopmentStorage=true", StringComparison.InvariantCultureIgnoreCase))
             //{

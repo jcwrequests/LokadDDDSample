@@ -17,25 +17,20 @@ using DDDSample;
 
 public sealed class Setup
 {
-    static readonly string FunctionalRecorderQueue = Conventions.FunctionalEventRecorderQueue;
-    static readonly string RouterQueue = Conventions.DefaultRouterQueue;
-    static readonly string ErrorsContainer = Conventions.DefaultErrorsFolder;
 
-    const string EventProcessingQueue = Conventions.Prefix + "-handle-events";
-    const string AggregateHandlerQueue = Conventions.Prefix + "-handle-cmd-entity";
     string[] _serviceQueues;
         
 
-    public void ConfigureQueues(int serviceQueueCount, int adapterQueueCount)
+    public Setup ConfigureQueues(int serviceQueueCount, int adapterQueueCount)
     {
         _serviceQueues = Enumerable
             .Range(0, serviceQueueCount)
             .Select((s, i) => Conventions.Prefix + "-handle-cmd-service-" + i)
             .ToArray();
+        return this;
     }
 
-    public const string TapesContainer = Conventions.Prefix + "-tapes";
-
+    
     public static readonly EnvelopeStreamer Streamer = Contracts.CreateStreamer();
     public static readonly IDocumentStrategy ViewStrategy = new ViewStrategy();
     public static readonly IDocumentStrategy DocStrategy = new DocumentStrategy();
@@ -47,20 +42,50 @@ public sealed class Setup
     public Func<string, IAppendOnlyStore> CreateTapes;
     public Func<IDocumentStrategy, IDocumentStore> CreateDocs;
 
+    public Setup ConfigStreaming(IStreamRoot streaming)
+    {
+        this.Streaming = streaming;
+        return this;
+    }
+    public Setup ConfigCreateDocs(Func<IDocumentStrategy,IDocumentStore> createDocs)
+    {
+        this.CreateDocs = createDocs;
+        return this;
+    }
+    public Setup ConfigCreateInbox(Func<string, IPartitionInbox> createInbox)
+    {
+        this.CreateInbox = createInbox;
+        return this;
+    }
+    public Setup ConfigCreateTapes(Func<string, IAppendOnlyStore> createTapes)
+    {
+        this.CreateTapes = createTapes;
+        return this;
+    }
+    public Setup ConfigCreateDoc(Func<IDocumentStrategy, IDocumentStore> createDocs)
+    {
+        this.CreateDocs = createDocs;
+        return this;
+    }
+    public Setup ConfigCreateQueueWriter(Func<string, IQueueWriter> createQueueWriter)
+    {
+        this.CreateQueueWriter = createQueueWriter;
+        return this;
+    }
     public Container Build()
     {
-        var appendOnlyStore = CreateTapes(TapesContainer);
+        var appendOnlyStore = CreateTapes(Containers.TapesContainer); 
         var messageStore = new MessageStore(appendOnlyStore, Streamer.MessageSerializer);
 
-        var toCommandRouter = new MessageSender(Streamer, CreateQueueWriter(RouterQueue));
-        var toFunctionalRecorder = new MessageSender(Streamer, CreateQueueWriter(FunctionalRecorderQueue));
-        var toEventHandlers = new MessageSender(Streamer, CreateQueueWriter(EventProcessingQueue));
+        var toCommandRouter = new MessageSender(Streamer, CreateQueueWriter(Queues.RouterQueue));
+        var toFunctionalRecorder = new MessageSender(Streamer, CreateQueueWriter(Queues.FunctionalRecorderQueue));
+        var toEventHandlers = new MessageSender(Streamer, CreateQueueWriter(Queues.EventProcessingQueue));
 
         var sender = new TypedMessageSender(toCommandRouter, toFunctionalRecorder);
 
         var store = new EventStore(messageStore);
 
-        var quarantine = new EnvelopeQuarantine(Streamer, sender, Streaming.GetContainer(ErrorsContainer));
+        var quarantine = new EnvelopeQuarantine(Streamer, sender, Streaming.GetContainer(Containers.ErrorsContainer));
 
         var builder = new FluentCqrsEngineBuilder(Streamer, quarantine);
 
@@ -70,10 +95,10 @@ public sealed class Setup
 
 
         builder.
-            Handle(inbox: CreateInbox, lambda: aem => CallHandlers(events, aem), name: "watch",queues: EventProcessingQueue).
-            Handle(inbox: CreateInbox, lambda: aem => CallHandlers(commands, aem), queues: AggregateHandlerQueue).
-            Handle(inbox: CreateInbox, lambda: MakeRouter(messageStore), name: "watch",queues: RouterQueue).
-            Handle(inbox: CreateInbox, lambda: aem => RecordFunctionalEvent(aem, messageStore), queues: FunctionalRecorderQueue).
+            Handle(inbox: CreateInbox, lambda: aem => CallHandlers(events, aem), name: "watch", queues: Queues.EventProcessingQueue).
+            Handle(inbox: CreateInbox, lambda: aem => CallHandlers(commands, aem), queues: Queues.AggregateHandlerQueue).
+            Handle(inbox: CreateInbox, lambda: MakeRouter(messageStore), name: "watch", queues: Queues.RouterQueue).
+            Handle(inbox: CreateInbox, lambda: aem => RecordFunctionalEvent(aem, messageStore), queues: Queues.FunctionalRecorderQueue).
             Handle(inbox: CreateInbox, lambda: aem => CallHandlers(funcs, aem), queues: _serviceQueues);
 
         // multiple service queues
@@ -129,7 +154,7 @@ public sealed class Setup
 
     Action<ImmutableEnvelope> MakeRouter(MessageStore tape)
     {
-        var entities = CreateQueueWriter(AggregateHandlerQueue);
+        var entities = CreateQueueWriter(Queues.AggregateHandlerQueue);
         var processing = _serviceQueues.Select(CreateQueueWriter).ToArray();
             
         return envelope =>
