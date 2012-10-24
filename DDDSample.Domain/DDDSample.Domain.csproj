@@ -53,13 +53,13 @@
     <Compile Include="Services\Customer\CustomerIndexService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\DDDSample.Core.csproj">
-      <Project>{90e46785-9be3-47de-bffd-d83d74ebb0b2}</Project>
-      <Name>DDDSample.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DDDSample.Contracts\DDDSample.Contracts.csproj">
       <Project>{05f71d09-df1c-4480-9fec-e29b542bbbde}</Project>
       <Name>DDDSample.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDDSample.Core\DDDSample.Core.csproj">
+      <Project>{90e46785-9be3-47de-bffd-d83d74ebb0b2}</Project>
+      <Name>DDDSample.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\DDDSample.Wires\DDDSample.Wires.csproj">
       <Project>{cb05e65d-4657-470d-bc0f-888425d88785}</Project>
