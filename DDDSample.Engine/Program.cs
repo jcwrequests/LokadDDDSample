@@ -76,11 +76,12 @@ namespace DDDSample.Engine
 
                 return setup.
                     ConfigStreaming(config.CreateStreaming()).
-                    ConfigCreateDoc(config.CreateDocumentStore).
-                    ConfigCreateInbox(s => config.CreateInbox(s, DecayEvil.BuildExponentialDecay(500))).
-                    ConfigCreateTapes(config.CreateAppendOnlyStore).
-                    ConfigCreateQueueWriter(config.CreateQueueWriter).
+                    ConfigDocumentStore(config.CreateDocumentStore).
+                    ConfigInbox(s => config.CreateInbox(s, DecayEvil.BuildExponentialDecay(500))).
+                    ConfigTapes(config.CreateAppendOnlyStore).
+                    ConfigQueueWriter(config.CreateQueueWriter).
                     ConfigureQueues(1,1).
+                    RegisterBoundedContext(typeof(DDDSample.BoundedContext)).
                     Build();
 
                 

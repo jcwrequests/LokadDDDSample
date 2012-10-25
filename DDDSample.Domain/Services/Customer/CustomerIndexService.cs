@@ -7,7 +7,7 @@ using Lokad.Cqrs;
 
 namespace DDDSample
 {
-    public class CustomerIndexService
+    public class CustomerIndexService : IDomainService
     {
         IDocumentReader<unit, CustomerIndexLookUp> storage;
         public CustomerIndexService(IDocumentReader<unit, CustomerIndexLookUp> storage)

@@ -9,7 +9,7 @@ using Lokad.Cqrs;
 
 namespace DDDSample
 {
-    public class CustomerIndexProjection
+    public class CustomerIndexProjection : IProjection
     {
         IDocumentWriter<unit, CustomerIndexLookUp> writer;
 

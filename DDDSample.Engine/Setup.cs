@@ -30,18 +30,24 @@ public sealed class Setup
         return this;
     }
 
-    
-    public static readonly EnvelopeStreamer Streamer = Contracts.CreateStreamer();
-    public static readonly IDocumentStrategy ViewStrategy = new ViewStrategy();
-    public static readonly IDocumentStrategy DocStrategy = new DocumentStrategy();
 
-    public IStreamRoot Streaming;
+    private static readonly EnvelopeStreamer Streamer = Contracts.CreateStreamer();
+    private static readonly IDocumentStrategy ViewStrategy = new ViewStrategy();
+    private static readonly IDocumentStrategy DocStrategy = new DocumentStrategy();
 
-    public Func<string, IQueueWriter> CreateQueueWriter;
-    public Func<string, IPartitionInbox> CreateInbox;
-    public Func<string, IAppendOnlyStore> CreateTapes;
-    public Func<IDocumentStrategy, IDocumentStore> CreateDocs;
 
+    private IStreamRoot Streaming;
+    private IList<Type> boundedContexts = new List<Type>();
+    private Func<string, IQueueWriter> CreateQueueWriter;
+    private Func<string, IPartitionInbox> CreateInbox;
+    private Func<string, IAppendOnlyStore> CreateTapes;
+    private Func<IDocumentStrategy, IDocumentStore> CreateDocs;
+
+    public Setup RegisterBoundedContext(Type context)
+    {
+        boundedContexts.Add(context);
+        return this;
+    }
     public Setup ConfigStreaming(IStreamRoot streaming)
     {
         this.Streaming = streaming;
@@ -52,22 +58,22 @@ public sealed class Setup
         this.CreateDocs = createDocs;
         return this;
     }
-    public Setup ConfigCreateInbox(Func<string, IPartitionInbox> createInbox)
+    public Setup ConfigInbox(Func<string, IPartitionInbox> createInbox)
     {
         this.CreateInbox = createInbox;
         return this;
     }
-    public Setup ConfigCreateTapes(Func<string, IAppendOnlyStore> createTapes)
+    public Setup ConfigTapes(Func<string, IAppendOnlyStore> createTapes)
     {
         this.CreateTapes = createTapes;
         return this;
     }
-    public Setup ConfigCreateDoc(Func<IDocumentStrategy, IDocumentStore> createDocs)
+    public Setup ConfigDocumentStore(Func<IDocumentStrategy, IDocumentStore> createDocs)
     {
         this.CreateDocs = createDocs;
         return this;
     }
-    public Setup ConfigCreateQueueWriter(Func<string, IQueueWriter> createQueueWriter)
+    public Setup ConfigQueueWriter(Func<string, IQueueWriter> createQueueWriter)
     {
         this.CreateQueueWriter = createQueueWriter;
         return this;
@@ -111,13 +117,24 @@ public sealed class Setup
         //var ops = new StreamOps(Streaming);
         var projections = new ProjectionsConsumingOneBoundedContext();
         // Domain Bounded Context
-        IBoundedContext context = new BoundedContext(sender: sender, 
-                                                     documentStore: viewDocs, 
-                                                     command: commands, 
-                                                     eventStore: store);
-        context.Build();
 
-        projections.RegisterFactory(context.Projections);
+        foreach (var contextType in this.boundedContexts)
+        {
+            object[] dependencies = new object[6] {sender, viewDocs, commands, store, events, funcs};
+
+            var context = Activator.CreateInstance( contextType, dependencies) as IBoundedContext;
+
+            //IBoundedContext context = new BoundedContext(sender: sender,
+            //                                         documentStore: viewDocs,
+            //                                         commands: commands,
+            //                                         eventStore: store,
+            //                                         events: events,
+            //                                         funcs: funcs);
+            context.Build();
+
+            projections.RegisterFactory(context.Projections);
+        }
+        
 
 
         // wire all projections

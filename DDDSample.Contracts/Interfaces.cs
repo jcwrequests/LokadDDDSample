@@ -5,6 +5,9 @@ using System.Runtime.Serialization;
 
 namespace DDDSample
 {
+    public interface IProjection { }
+    public interface IDomainService { }
+
     public interface ISampleMessage { }
 
     public interface ICommand : ISampleMessage { }

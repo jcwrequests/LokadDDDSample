@@ -16,16 +16,18 @@ namespace DDDSample
 
         public BoundedContext(TypedMessageSender sender, 
                               IDocumentStore documentStore,
-                              RedirectToCommand command,
-                              IEventStore eventStore)
+                              RedirectToCommand commands,
+                              IEventStore eventStore,
+                              RedirectToDynamicEvent events,
+                              RedirectToCommand funcs)
         {
             if (sender == null) throw new ArgumentNullException("sender");
             if (documentStore == null) throw new ArgumentNullException("store");
-            if (command == null) throw new ArgumentNullException("command");
+            if (commands == null) throw new ArgumentNullException("command");
             if (eventStore == null) throw new ArgumentNullException("eventStore");
             this.sender = sender;
             this.documentStore = documentStore;
-            this.command = command;
+            this.command = commands;
             this.eventStore = eventStore;
         }
         public void Build()
