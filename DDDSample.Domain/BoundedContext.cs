@@ -40,7 +40,10 @@ namespace DDDSample
             command.WireToWhen( new CustomerIndexService(documentStore.GetReader<unit, CustomerIndexLookUp>()));
             
         }
-
+        public IEnumerable<IDomainService> DomainServices()
+        {
+            yield return new CustomerIndexService(documentStore.GetReader<unit, CustomerIndexLookUp>());
+        }
         public IEnumerable<object> Projections(IDocumentStore docs)
         {
             yield return new CustomerIndexProjection(docs.GetWriter<unit, CustomerIndexLookUp>());

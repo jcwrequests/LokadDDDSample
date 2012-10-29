@@ -22,6 +22,7 @@ namespace DDDSample
     {
         public const string TagValue = "customer";
 
+        public CustomerId() { }
         public CustomerId(int id)
         {
             Contract.Requires(id > 0);

@@ -118,6 +118,8 @@ public sealed class Setup
         var projections = new ProjectionsConsumingOneBoundedContext();
         // Domain Bounded Context
 
+        List<IDomainService> domainServies = new List<IDomainService>();
+
         foreach (var contextType in this.boundedContexts)
         {
             object[] dependencies = new object[6] {sender, viewDocs, commands, store, events, funcs};
@@ -133,6 +135,9 @@ public sealed class Setup
             context.Build();
 
             projections.RegisterFactory(context.Projections);
+            
+            domainServies.AddRange(context.DomainServices());
+            
         }
         
 
@@ -154,7 +159,8 @@ public sealed class Setup
             ProjectionFactories = projections,
             ViewDocs = viewDocs,
             Publisher = publisher,
-            AppendOnlyStore = appendOnlyStore
+            AppendOnlyStore = appendOnlyStore,
+            DomainServices = domainServies
         };
     }
 
@@ -269,7 +275,7 @@ public sealed class Container : IDisposable
     public IDocumentStore ViewDocs;
     public Setup.ProjectionsConsumingOneBoundedContext ProjectionFactories;
     public MessageStorePublisher Publisher;
-
+    public IList<IDomainService> DomainServices;
     public CqrsEngineHost BuildEngine(CancellationToken token)
     {
         return Builder.Build(token);
