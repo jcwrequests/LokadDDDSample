@@ -44,6 +44,11 @@ public sealed class Setup
     private Func<IDocumentStrategy, IDocumentStore> CreateDocs;
     private Dictionary<Type, IDispatcher> dispatchers = new Dictionary<Type,IDispatcher>();
 
+    public Setup RegisterBoundedContext<Context>() where Context : IBoundedContext
+    {
+        boundedContexts.Add(typeof(Context));
+        return this;
+    }
     public Setup RegisterBoundedContext(Type context)
     {
         boundedContexts.Add(context);
@@ -60,6 +65,13 @@ public sealed class Setup
         if (this.dispatchers.ContainsKey(boundedContext)) throw new InvalidOperationException("This Dispatcher has already been register");
 
         this.dispatchers.Add(key: boundedContext, value: dispatcher);
+        return this;
+    }
+    public Setup RegisterDispatcher<Context>(IDispatcher dispatcher) where Context : IBoundedContext
+    {
+        if (this.dispatchers.ContainsKey(typeof(Context))) throw new InvalidOperationException("This Dispatcher has already been register");
+
+        this.dispatchers.Add(key: typeof(Context), value: dispatcher);
         return this;
     }
     public Setup ConfigCreateDocs(Func<IDocumentStrategy,IDocumentStore> createDocs)

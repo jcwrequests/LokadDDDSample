@@ -89,8 +89,8 @@ namespace DDDSample.Engine
                     ConfigTapes(config.CreateAppendOnlyStore).
                     ConfigQueueWriter(config.CreateQueueWriter).
                     ConfigureQueues(1,1).
-                    RegisterBoundedContext(typeof(DDDSample.BoundedContext)).
-                    RegisterDispatcher(typeof(DDDSample.BoundedContext),new TestDispatcher()).
+                    RegisterBoundedContext<DDDSample.BoundedContext>().
+                    RegisterDispatcher<DDDSample.BoundedContext>(new TestDispatcher()).
                     Build();
 
                 
