@@ -42,6 +42,7 @@ public sealed class Setup
     private Func<string, IPartitionInbox> CreateInbox;
     private Func<string, IAppendOnlyStore> CreateTapes;
     private Func<IDocumentStrategy, IDocumentStore> CreateDocs;
+    private Dictionary<Type, IDispatcher> dispatchers = new Dictionary<Type,IDispatcher>();
 
     public Setup RegisterBoundedContext(Type context)
     {
@@ -51,6 +52,14 @@ public sealed class Setup
     public Setup ConfigStreaming(IStreamRoot streaming)
     {
         this.Streaming = streaming;
+        return this;
+    }
+    public Setup RegisterDispatcher(Type boundedContext, IDispatcher dispatcher)
+    {
+        if (boundedContext.GetInterface("IBoundedContext", true) == null) throw new InvalidOperationException("The boundedContext type must implement IBoundedContext");
+        if (this.dispatchers.ContainsKey(boundedContext)) throw new InvalidOperationException("This Dispatcher has already been register");
+
+        this.dispatchers.Add(key: boundedContext, value: dispatcher);
         return this;
     }
     public Setup ConfigCreateDocs(Func<IDocumentStrategy,IDocumentStore> createDocs)
@@ -122,7 +131,20 @@ public sealed class Setup
 
         foreach (var contextType in this.boundedContexts)
         {
-            object[] dependencies = new object[6] {sender, viewDocs, commands, store, events, funcs};
+            object[] dependencies;
+
+            if (dispatchers.ContainsKey(contextType))
+            {
+                IDispatcher dispatcher;
+                dispatchers.TryGetValue(contextType,out dispatcher);
+
+                dependencies = new object[7] {sender, viewDocs, commands, store, events, funcs, dispatcher};
+            }
+            else
+            {
+                dependencies = new object[6] {sender, viewDocs, commands, store, events, funcs};
+            }
+            
 
             var context = Activator.CreateInstance( contextType, dependencies) as IBoundedContext;
 

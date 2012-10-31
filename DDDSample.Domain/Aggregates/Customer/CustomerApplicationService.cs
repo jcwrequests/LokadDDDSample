@@ -8,10 +8,15 @@ namespace DDDSample
     public class CustomerApplicationService : IApplicationService
     {
         readonly IEventStore _eventStore;
-        public CustomerApplicationService(IEventStore eventStore)
+        readonly IDispatcher _dispatcher;
+
+        public CustomerApplicationService(IEventStore eventStore,
+                                          IDispatcher dispatcher)
         {
             if (eventStore == null) throw new ArgumentNullException("eventStore");
+            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
             _eventStore = eventStore;
+            _dispatcher = dispatcher;
         }
          public void Execute(ICommand command)
         {
@@ -31,6 +36,7 @@ namespace DDDSample
                 try
                 {
                      _eventStore.AppendEventsToStream(customerId, eventStream.StreamVersion, customer.Changes);
+                     _dispatcher.Dispatch(customer.Changes);
                     return;
                 }
                 catch (OptimisticConcurrencyException ex)

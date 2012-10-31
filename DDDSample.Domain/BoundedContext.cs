@@ -13,13 +13,15 @@ namespace DDDSample
         IDocumentStore documentStore;
         RedirectToCommand command;
         IEventStore eventStore;
+        IDispatcher dispatcher;
 
         public BoundedContext(TypedMessageSender sender, 
                               IDocumentStore documentStore,
                               RedirectToCommand commands,
                               IEventStore eventStore,
                               RedirectToDynamicEvent events,
-                              RedirectToCommand funcs)
+                              RedirectToCommand funcs,
+                              IDispatcher dispatcher)
         {
             if (sender == null) throw new ArgumentNullException("sender");
             if (documentStore == null) throw new ArgumentNullException("store");
@@ -29,10 +31,11 @@ namespace DDDSample
             this.documentStore = documentStore;
             this.command = commands;
             this.eventStore = eventStore;
+            this.dispatcher = dispatcher;
         }
         public void Build()
         {
-            command.WireToWhen(new CustomerApplicationService(eventStore));
+            command.WireToWhen(new CustomerApplicationService(eventStore,dispatcher));
             //DomainBoundedContext.Ports(sender).ForEach(events.WireToWhen);
             //DomainBoundedContext.Tasks(sender, viewDocs, true).ForEach(builder.AddTask);
             //DomainBoundedContext.FuncApplicationServices().ForEach(funcs.WireToWhen);

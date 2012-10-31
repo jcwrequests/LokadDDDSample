@@ -8,6 +8,12 @@ namespace DDDSample
     public interface IProjection { }
     public interface IDomainService { }
 
+    public interface IDispatcher : IDomainService
+    {
+        void Dispatch(IEvent @event);
+        void Dispatch(IEnumerable<IEvent> events);
+    }
+
     public interface ISampleMessage { }
 
     public interface ICommand : ISampleMessage { }

@@ -25,15 +25,15 @@ namespace DDDSample.Engine
                 {
                     var task = engine.Start(cts.Token);
 
-                    //env.SendToCommandRouter.Send(new CreateCustomer(new CustomerId(1), "Rinat Abdullin"));
+                    env.SendToCommandRouter.Send(new CreateCustomer(new CustomerId(1), "Rinat Abdullin"));
 
                     CustomerIndexService index = env.
                                                     DomainServices.Where(d => d.GetType().Equals(typeof(CustomerIndexService))).
                                                     Select(s => s as CustomerIndexService).FirstOrDefault();
 
-                    var id = index.GetCustomerId("Rinat Abdullin");
+                    //var id = index.GetCustomerId("Rinat Abdullin");
 
-                    Console.WriteLine(id.ToString());
+                    //Console.WriteLine(id.ToString());
 
                     Console.WriteLine(@"Press enter to stop");
                     Console.ReadLine();
@@ -90,6 +90,7 @@ namespace DDDSample.Engine
                     ConfigQueueWriter(config.CreateQueueWriter).
                     ConfigureQueues(1,1).
                     RegisterBoundedContext(typeof(DDDSample.BoundedContext)).
+                    RegisterDispatcher(typeof(DDDSample.BoundedContext),new TestDispatcher()).
                     Build();
 
                 

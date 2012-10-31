@@ -26,7 +26,7 @@ namespace DDDSample
         public CustomerId(int id)
         {
             Contract.Requires(id > 0);
-            Id = id;
+            this.Id = id;
         }
         public override int Id {get; protected set;}
         

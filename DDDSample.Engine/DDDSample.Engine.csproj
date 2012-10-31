@@ -67,6 +67,7 @@
     <Compile Include="Queues.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="StartupProjectionRebuilder.cs" />
+    <Compile Include="TestDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DDDSample.Contracts\DDDSample.Contracts.csproj">
