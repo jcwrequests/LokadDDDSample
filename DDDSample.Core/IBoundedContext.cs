@@ -12,7 +12,6 @@ namespace DDDSample
     public interface IBoundedContext
     {
         IEnumerable<object> Projections(IDocumentStore docs);
-        IEnumerable<IDomainService> DomainServices();
         void Build();
     }
     

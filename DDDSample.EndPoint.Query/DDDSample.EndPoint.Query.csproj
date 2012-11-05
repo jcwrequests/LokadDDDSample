@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{60398789-BFF5-41A1-B9D0-DE9F6813772B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DDDSample.EndPoint.Query</RootNamespace>
+    <AssemblyName>DDDSample.EndPoint.Query</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Lokad.Cqrs.Portable">
+      <HintPath>..\Libraries\Lokad.Cqrs.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\Libraries\ProtoBuf-net\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\..\..\GitHub\lokad-cqrs\Library\ServiceStack\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DDDSample.Contracts\DDDSample.Contracts.csproj">
+      <Project>{05f71d09-df1c-4480-9fec-e29b542bbbde}</Project>
+      <Name>DDDSample.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDDSample.Core\DDDSample.Core.csproj">
+      <Project>{90e46785-9be3-47de-bffd-d83d74ebb0b2}</Project>
+      <Name>DDDSample.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDDSample.Domain\DDDSample.Domain.csproj">
+      <Project>{af2e64da-7dac-4a7f-b660-928a29162c13}</Project>
+      <Name>DDDSample.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDDSample.Engine\DDDSample.Engine.csproj">
+      <Project>{fd830973-e5ae-494d-baf9-c6446351466c}</Project>
+      <Name>DDDSample.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDDSample.Wires\DDDSample.Wires.csproj">
+      <Project>{cb05e65d-4657-470d-bc0f-888425d88785}</Project>
+      <Name>DDDSample.Wires</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -28,6 +28,7 @@ namespace DDDSample
             Contract.Requires(id > 0);
             this.Id = id;
         }
+        [DataMember(Order = 1)]
         public override int Id {get; protected set;}
         
         public override string GetTag()
